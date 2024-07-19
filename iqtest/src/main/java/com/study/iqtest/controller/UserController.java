@@ -74,7 +74,7 @@ public class UserController {
             PasswordResetTokenDTO resetTokenDTO = new PasswordResetTokenDTO(token, user.getEmail(), LocalDateTime.now().plusMinutes(15));
             passwordResetTokenService.save(resetTokenDTO);
 
-            String resetLink = "http://yourdomain.com/reset-password?token=" + token;
+            String resetLink = "http://iqtest.com/reset-password?token=" + token;
 
             String emailContent = "<html><body>" +
                     "<h2>Reset your password</h2>" +
