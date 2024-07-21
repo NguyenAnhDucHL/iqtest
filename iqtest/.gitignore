@@ -1,0 +1,24 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Virtual machine crash logs
+hs_err_pid*
+
+# Generated files
+gen/
+
+# Gradle
+.gradle/
+build/
+out/
+
+
+build/
