@@ -23,7 +23,7 @@ public class PasswordResetTokenService {
     private UserService userService;
 
     public void save(PasswordResetTokenDTO tokenDTO) {
-        PasswordResetToken token = passwordResetTokenMapper.toEntity(tokenDTO);
+        PasswordResetToken token = passwordResetTokenMapper.toModal(tokenDTO);
         tokenRepository.save(token);
     }
 

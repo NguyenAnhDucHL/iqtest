@@ -8,5 +8,5 @@ import org.mapstruct.Mapper;
 public interface PasswordResetTokenMapper {
     PasswordResetTokenDTO toDto(PasswordResetToken entity);
 
-    PasswordResetToken toEntity(PasswordResetTokenDTO dto);
+    PasswordResetToken toModal(PasswordResetTokenDTO dto);
 }

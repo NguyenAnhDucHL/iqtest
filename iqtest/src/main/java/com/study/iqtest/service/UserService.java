@@ -29,7 +29,7 @@ public class UserService {
 
     public void registerUser(UserDTO userDTO) {
         userDTO.setCreatedAt(new Date());
-        User user = userMapper.toEntity(userDTO);
+        User user = userMapper.toModal(userDTO);
         userRepository.save(user);
     }
 

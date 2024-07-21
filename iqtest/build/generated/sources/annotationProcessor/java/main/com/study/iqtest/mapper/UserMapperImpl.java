@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-07-17T21:55:46+0700",
+    date = "2024-07-19T17:03:39+0700",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.8.jar, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -50,7 +50,7 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
-    public User toEntity(UserDTO userDTO) {
+    public User toModal(UserDTO userDTO) {
         if ( userDTO == null ) {
             return null;
         }

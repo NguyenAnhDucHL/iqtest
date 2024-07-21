@@ -2,7 +2,6 @@ package com.study.iqtest.controller;
 
 import com.study.iqtest.dto.UserDTO;
 import com.study.iqtest.dto.PasswordResetTokenDTO;
-import com.study.iqtest.mapper.PasswordResetTokenMapper;
 import com.study.iqtest.security.JwtUtil;
 import com.study.iqtest.service.EmailService;
 import com.study.iqtest.service.PasswordResetTokenService;
@@ -85,7 +84,7 @@ public class UserController {
                     "<p>Thanks,<br>The IQTest Team</p>" +
                     "</body></html>";
 
-            // Gửi email
+            // Send email
             emailService.sendMessage(param.getEmail(), "Password Reset", emailContent);
 
             return ResponseEntity.ok("Password reset link sent to email");
