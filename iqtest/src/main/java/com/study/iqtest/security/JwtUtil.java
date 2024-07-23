@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -30,7 +31,10 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(jwtConfig.getSecretKey()).parseClaimsJws(token).getBody();
+        return Jwts.parser()
+                .setSigningKey(jwtConfig.getSecretKey().getBytes(StandardCharsets.UTF_8)) // Ensure the key is in bytes
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -46,7 +50,7 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes())
+                .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes(StandardCharsets.UTF_8)) // Ensure the key is in bytes
                 .compact();
     }
 
@@ -55,3 +59,4 @@ public class JwtUtil {
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 }
+

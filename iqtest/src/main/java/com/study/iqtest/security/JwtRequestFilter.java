@@ -1,6 +1,7 @@
 package com.study.iqtest.security;
 
 import com.study.iqtest.security.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
+            try {
+                username = jwtUtil.extractUsername(jwt);
+            } catch (IllegalArgumentException e) {
+                logger.error("Unable to get JWT Token");
+            } catch (ExpiredJwtException e) {
+                logger.error("JWT Token has expired");
+            }
         }
 
         if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {

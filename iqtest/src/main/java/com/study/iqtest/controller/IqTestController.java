@@ -2,7 +2,7 @@ package com.study.iqtest.controller;
 
 import com.study.iqtest.dto.IqTestAnswerDTO;
 import com.study.iqtest.dto.UserDTO;
-import com.study.iqtest.service.IqTestService;
+import com.study.iqtest.service.student.IqTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

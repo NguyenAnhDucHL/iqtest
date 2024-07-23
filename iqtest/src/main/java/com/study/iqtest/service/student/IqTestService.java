@@ -1,4 +1,4 @@
-package com.study.iqtest.service;
+package com.study.iqtest.service.student;
 
 import com.study.iqtest.dto.IqTestAnswerDTO;
 import com.study.iqtest.dto.IqTestQuestionDTO;

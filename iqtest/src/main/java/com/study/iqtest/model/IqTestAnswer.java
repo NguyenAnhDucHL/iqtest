@@ -27,6 +27,8 @@ public class IqTestAnswer {
     private String answerText;
     @JsonProperty("isCorrect")
     private boolean isCorrect;
+    @JsonProperty("imageUrl")
+    private String imageUrl;
     @JsonProperty("createdAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private String createdAt;
@@ -34,5 +36,4 @@ public class IqTestAnswer {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private String updatedAt;
 
-    // Getters and setters
 }
