@@ -106,7 +106,12 @@ public class IqTestSettingService {
 
     public List<IqTestSettingDTO> getAllSettings() {
         return iqTestSettingRepository.findAll().stream()
-                .map(iqTestSettingMapper::toDto)
+                .map(iqTestSetting -> {
+                    IqTestSettingDTO settingDTO = iqTestSettingMapper.toDto(iqTestSetting);
+                    List<IqTestQuestionDTO> questions = iqTestQuestionService.getQuestionsBySettingId(iqTestSetting.getId());
+                    settingDTO.setQuestions(questions);
+                    return settingDTO;
+                })
                 .collect(Collectors.toList());
     }
 
