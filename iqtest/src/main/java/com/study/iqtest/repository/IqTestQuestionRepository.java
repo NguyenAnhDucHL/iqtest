@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface IqTestQuestionRepository extends MongoRepository<IqTestQuestion, String> {
     List<IqTestQuestion> findByTestSettingId(String testId);
+    void deleteByTestSettingId(String testSettingId);
 }

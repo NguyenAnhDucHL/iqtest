@@ -25,6 +25,9 @@ public class IqTestQuestionService {
     private IqTestAnswerRepository iqTestAnswerRepository;
 
     @Autowired
+    private IqTestAnswerService iqTestAnswerService;
+
+    @Autowired
     private IqTestQuestionMapper iqTestQuestionMapper;
 
     @Autowired
@@ -83,10 +86,23 @@ public class IqTestQuestionService {
     }
 
     @Transactional
-    public void deleteQuestion(String id) {
-        iqTestQuestionRepository.deleteById(id);
-        iqTestAnswerRepository.deleteByQuestionId(id);
+    public void deleteQuestionByQuestionId(String questionId) {
+        iqTestQuestionRepository.deleteById(questionId);
+        iqTestAnswerService.deleteAnswerByQuestionId(questionId);
     }
+
+    @Transactional
+    public void deleteQuestionByTestSettingId(String testSettingId) {
+        List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testSettingId);
+        List<String> questionIds = questions.stream()
+                .map(IqTestQuestion::getId)
+                .collect(Collectors.toList());
+
+        iqTestQuestionRepository.deleteByTestSettingId(testSettingId);
+
+        iqTestAnswerService.deleteAnswersByQuestionIds(questionIds);
+    }
+
 
     public List<IqTestQuestionDTO> getQuestionsBySettingId(String settingId) {
         List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(settingId);

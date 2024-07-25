@@ -27,8 +27,8 @@ public class IqTestQuestionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable String id) {
-        iqTestQuestionService.deleteQuestion(id);
+    public ResponseEntity<Void> deleteQuestionByQuestionId(@PathVariable String id) {
+        iqTestQuestionService.deleteQuestionByQuestionId(id);
         return ResponseEntity.noContent().build();
     }
 

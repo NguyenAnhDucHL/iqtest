@@ -1,6 +1,6 @@
 package com.study.iqtest.controller.admin;
 
-import com.study.iqtest.model.IqTestSetting;
+import com.study.iqtest.dto.IqTestSettingDTO;
 import com.study.iqtest.service.admin.IqTestSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,29 +15,29 @@ public class IqTestSettingController {
     @Autowired
     private IqTestSettingService iqTestSettingService;
 
-    @PostMapping
-    public ResponseEntity<IqTestSetting> createSetting(@RequestBody IqTestSetting setting) {
-        return ResponseEntity.ok(iqTestSettingService.createSetting(setting));
+    @PostMapping("/settings-with-questions")
+    public ResponseEntity<IqTestSettingDTO> createSettingWithQuestions(@RequestBody IqTestSettingDTO settingDto) {
+        return ResponseEntity.ok(iqTestSettingService.createSettingWithQuestions(settingDto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<IqTestSetting> updateSetting(@PathVariable String id, @RequestBody IqTestSetting setting) {
-        return ResponseEntity.ok(iqTestSettingService.updateSetting(id, setting));
+    public ResponseEntity<IqTestSettingDTO> updateSetting(@PathVariable String id, @RequestBody IqTestSettingDTO settingDto) {
+        return ResponseEntity.ok(iqTestSettingService.updateSetting(id, settingDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSetting(@PathVariable String id) {
-        iqTestSettingService.deleteSetting(id);
+    public ResponseEntity<Void> deleteSettingByTestSettingId(@PathVariable String testSettingId) {
+        iqTestSettingService.deleteSettingById(testSettingId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<IqTestSetting>> getAllSettings() {
+    public ResponseEntity<List<IqTestSettingDTO>> getAllSettings() {
         return ResponseEntity.ok(iqTestSettingService.getAllSettings());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<IqTestSetting> getSettingById(@PathVariable String id) {
+    public ResponseEntity<IqTestSettingDTO> getSettingById(@PathVariable String id) {
         return ResponseEntity.ok(iqTestSettingService.getSettingById(id));
     }
 

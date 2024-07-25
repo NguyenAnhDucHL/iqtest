@@ -10,5 +10,6 @@ import java.util.List;
 public interface IqTestAnswerRepository extends MongoRepository<IqTestAnswer, String> {
     List<IqTestAnswer> findByQuestionId(String questionId);
     void deleteByQuestionId(String questionId);
+    void deleteByQuestionIdIn(List<String> questionIds);
 }
 

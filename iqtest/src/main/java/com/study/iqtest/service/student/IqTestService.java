@@ -1,9 +1,9 @@
 package com.study.iqtest.service.student;
 
-import com.study.iqtest.dto.IqTestAnswerDTO;
 import com.study.iqtest.dto.IqTestQuestionDTO;
-import com.study.iqtest.dto.IqTestSettingDTO;
+import com.study.iqtest.dto.IqTestDTO;
 import com.study.iqtest.dto.UserDTO;
+import com.study.iqtest.dto.IqTestAnswerDTO;
 import com.study.iqtest.dto.IqTestResultDTO;
 import com.study.iqtest.exception.IqTestException;
 import com.study.iqtest.mapper.IqTestAnswerMapper;
@@ -53,7 +53,7 @@ public class IqTestService {
     @Autowired
     private IqTestResultMapper iqTestResultMapper;
 
-    public IqTestSettingDTO startTest(UserDTO user) {
+    public IqTestDTO startTest(UserDTO user) {
         IqTest iqTest = new IqTest();
         iqTest.setUserId(user.getId());
         iqTest.setTestDate(LocalDateTime.now().toString());
