@@ -9,9 +9,7 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", uses = {IqTestAnswerMapper.class})
 public interface IqTestQuestionMapper {
-
     @Mapping(target = "answers", ignore = true)
     IqTestQuestionDTO toDto(IqTestQuestion iqTestQuestion);
-
     IqTestQuestion toModal(IqTestQuestionDTO questionDTO);
 }

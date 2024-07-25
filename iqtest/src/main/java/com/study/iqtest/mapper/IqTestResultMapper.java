@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface IqTestResultMapper {
     IqTestResultDTO toDto(IqTestResult iqTestResult);
-    IqTestResult toEntity(IqTestResultDTO iqTestResultDTO);
+    IqTestResult toModal(IqTestResultDTO iqTestResultDTO);
 }

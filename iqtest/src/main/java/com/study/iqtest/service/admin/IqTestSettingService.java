@@ -38,7 +38,7 @@ public class IqTestSettingService {
 
     @Transactional
     public IqTestSettingDTO createSettingWithQuestions(IqTestSettingDTO dto) {
-        IqTestSetting setting = iqTestSettingMapper.toEntity(dto);
+        IqTestSetting setting = iqTestSettingMapper.toModal(dto);
         setting.setCreatedAt(LocalDateTime.now().toString());
         setting.setUpdatedAt(LocalDateTime.now().toString());
         setting = iqTestSettingRepository.save(setting);

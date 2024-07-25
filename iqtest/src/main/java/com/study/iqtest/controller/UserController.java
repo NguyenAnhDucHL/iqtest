@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -18,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+@Api(value = "User Management API", tags = {"User Management"})
 public class UserController {
 
     @Autowired
@@ -39,6 +42,7 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
+    @ApiOperation(value = "Register a new user", response = ResponseEntity.class)
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
         if (userService.findByEmail(userDTO.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email is already in use");
@@ -49,6 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @ApiOperation(value = "Login a user", response = ResponseEntity.class)
     public ResponseEntity<?> loginUser(@RequestBody UserDTO userDTO) {
         Optional<UserDTO> userOpt = userService.findByEmail(userDTO.getEmail());
         if (userOpt.isPresent()) {
@@ -64,6 +69,7 @@ public class UserController {
     }
 
     @PostMapping("/forgot-password")
+    @ApiOperation(value = "Request a password reset", response = ResponseEntity.class)
     public ResponseEntity<?> forgotPassword(@RequestBody PasswordResetTokenDTO param) {
         Optional<UserDTO> userOptional = userService.findByEmail(param.getEmail());
         if (userOptional.isPresent()) {
