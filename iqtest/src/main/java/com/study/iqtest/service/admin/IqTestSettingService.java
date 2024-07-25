@@ -23,6 +23,7 @@ public class IqTestSettingService {
     @Autowired
     private IqTestSettingRepository iqTestSettingRepository;
 
+    @Autowired
     private IqTestQuestionRepository iqTestQuestionRepository;
 
     @Autowired

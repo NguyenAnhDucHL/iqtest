@@ -30,7 +30,7 @@ public class IqTestAnswerController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{questionId}")
+    @GetMapping("/question/{questionId}")
     public ResponseEntity<List<IqTestAnswer>> getAnswersByQuestionId(@PathVariable String questionId) {
         return ResponseEntity.ok(iqTestAnswerService.getAnswersByQuestionId(questionId));
     }

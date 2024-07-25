@@ -25,7 +25,7 @@ public class IqTestSettingController {
         return ResponseEntity.ok(iqTestSettingService.updateSetting(id, settingDto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{testSettingId}")
     public ResponseEntity<Void> deleteSettingByTestSettingId(@PathVariable String testSettingId) {
         iqTestSettingService.deleteSettingById(testSettingId);
         return ResponseEntity.noContent().build();
