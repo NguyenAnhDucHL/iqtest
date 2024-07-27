@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -20,7 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
-@Api(value = "User Management API", tags = {"User Management"})
+@Tag(name = "User Management", description = "API for User Management activities such as registration, login, and password resets")
 public class UserController {
 
     @Autowired
@@ -42,7 +45,7 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    @ApiOperation(value = "Register a new user", response = ResponseEntity.class)
+    @Operation(summary = "Register a new user", description = "Registers a new user and encodes their password")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
         if (userService.findByEmail(userDTO.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email is already in use");
@@ -53,7 +56,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    @ApiOperation(value = "Login a user", response = ResponseEntity.class)
+    @Operation(summary = "Login a user", description = "Logs in a user and returns a JWT token")
     public ResponseEntity<?> loginUser(@RequestBody UserDTO userDTO) {
         Optional<UserDTO> userOpt = userService.findByEmail(userDTO.getEmail());
         if (userOpt.isPresent()) {
@@ -69,7 +72,7 @@ public class UserController {
     }
 
     @PostMapping("/forgot-password")
-    @ApiOperation(value = "Request a password reset", response = ResponseEntity.class)
+    @Operation(summary = "Request a password reset", description = "Initiates a password reset process and sends a reset link to the user's email")
     public ResponseEntity<?> forgotPassword(@RequestBody PasswordResetTokenDTO param) {
         Optional<UserDTO> userOptional = userService.findByEmail(param.getEmail());
         if (userOptional.isPresent()) {
@@ -98,3 +101,4 @@ public class UserController {
         return ResponseEntity.badRequest().body("Email not found");
     }
 }
+
