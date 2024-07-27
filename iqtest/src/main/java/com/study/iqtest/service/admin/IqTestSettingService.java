@@ -2,6 +2,7 @@ package com.study.iqtest.service.admin;
 
 import com.study.iqtest.dto.IqTestQuestionDTO;
 import com.study.iqtest.dto.IqTestSettingDTO;
+import com.study.iqtest.exception.ResourceNotFoundException;
 import com.study.iqtest.mapper.IqTestSettingMapper;
 import com.study.iqtest.model.IqTestQuestion;
 import com.study.iqtest.model.IqTestSetting;
@@ -83,7 +84,7 @@ public class IqTestSettingService {
 
             return result;
         } else {
-            throw new RuntimeException("Setting not found with id: " + id);
+            throw new ResourceNotFoundException("Setting not found with id: " + id);
         }
     }
 
