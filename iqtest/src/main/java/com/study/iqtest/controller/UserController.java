@@ -7,9 +7,14 @@ import com.study.iqtest.security.JwtUtil;
 import com.study.iqtest.service.EmailService;
 import com.study.iqtest.service.PasswordResetTokenService;
 import com.study.iqtest.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -101,5 +106,15 @@ public class UserController {
             return ResponseEntity.ok("Password reset link sent to email");
         }
         return ResponseEntity.badRequest().body("Email not found");
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Logout a user", description = "Logs out the currently authenticated user")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return ResponseEntity.ok("User logged out successfully");
     }
 }
