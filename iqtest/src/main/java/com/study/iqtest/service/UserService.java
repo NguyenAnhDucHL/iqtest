@@ -40,9 +40,7 @@ public class UserService implements UserDetailsService {
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
     public boolean checkPassword(String rawPassword, String encodedPassword) {
-        boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
-        logger.info("Checking password: rawPassword=" + rawPassword + ", encodedPassword=" + encodedPassword + ", matches=" + matches);
-        return matches;
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
     public void registerUser(UserDTO userDTO) {
