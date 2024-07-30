@@ -1,10 +1,8 @@
 package com.study.iqtest.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.bson.types.ObjectId;
 
 import java.util.Date;
 
@@ -14,13 +12,13 @@ import java.util.Date;
 @AllArgsConstructor
 public class UserDTO {
 
-    private String id;
+    private ObjectId id;
     private String name;
     private String email;
     private String password;
     private String phoneNumber;
-    private String roleId;
-
+    private ObjectId roleId;
+    
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date createdAt;
 

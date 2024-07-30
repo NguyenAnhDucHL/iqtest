@@ -18,10 +18,12 @@ import com.study.iqtest.repository.IqTestAnswerRepository;
 import com.study.iqtest.repository.IqTestQuestionRepository;
 import com.study.iqtest.repository.IqTestRepository;
 import com.study.iqtest.repository.IqTestResultRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,25 +58,25 @@ public class IqTestService {
     public IqTestDTO startTest(UserDTO user) {
         IqTest iqTest = new IqTest();
         iqTest.setUserId(user.getId());
-        iqTest.setTestDate(LocalDateTime.now().toString());
+        iqTest.setTestDate(new Date());
         iqTest.setStatus("In Progress");
         iqTest = iqTestRepository.save(iqTest);
         return iqTestMapper.toDto(iqTest);
     }
 
-    public List<IqTestQuestionDTO> getQuestions(String testId) {
+    public List<IqTestQuestionDTO> getQuestions(ObjectId testId) {
         List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testId);
         return questions.stream().map(iqTestQuestionMapper::toDto).collect(Collectors.toList());
     }
 
-    public IqTestAnswerDTO submitAnswer(String testId, IqTestAnswerDTO answerDTO) {
+    public IqTestAnswerDTO submitAnswer(ObjectId testId, IqTestAnswerDTO answerDTO) {
         IqTestAnswer answer = iqTestAnswerMapper.toModal(answerDTO);
-        answer.setCreatedAt(LocalDateTime.now().toString());
+        answer.setCreatedAt(new Date());
         answer = iqTestAnswerRepository.save(answer);
         return iqTestAnswerMapper.toDto(answer);
     }
 
-    public IqTestResultDTO finishTest(String testId) {
+    public IqTestResultDTO finishTest(ObjectId testId) {
         Optional<IqTest> optionalTest = iqTestRepository.findById(testId);
         if (!optionalTest.isPresent()) {
             throw new IqTestException("Test not found");
@@ -86,14 +88,14 @@ public class IqTestService {
         IqTestResult iqTestResult = new IqTestResult();
         iqTestResult.setTestId(testId);
         iqTestResult.setScore(calculateScore(testId));
-        iqTestResult.setResultDate(LocalDateTime.now().toString());
+        iqTestResult.setResultDate(new Date());
         iqTestResult.setFeedback("Great Job!");
         iqTestResult = iqTestResultRepository.save(iqTestResult);
 
         return iqTestResultMapper.toDto(iqTestResult);
     }
 
-    public IqTestResultDTO getResult(String testId) {
+    public IqTestResultDTO getResult(ObjectId testId) {
         Optional<IqTestResult> result = iqTestResultRepository.findByTestId(testId);
         if (result.isPresent()) {
             return iqTestResultMapper.toDto(result.get());
@@ -102,12 +104,12 @@ public class IqTestService {
         }
     }
 
-    private int calculateScore(String testId) {
+    private int calculateScore(ObjectId testId) {
         List<IqTestAnswer> answers = iqTestAnswerRepository.findByQuestionId(testId);
         int score = 0;
         for (IqTestAnswer answer : answers) {
             if (answer.isCorrect()) {
-                score += 10; // giả sử mỗi câu đúng được 10 điểm
+                score += 10;
             }
         }
         return score;

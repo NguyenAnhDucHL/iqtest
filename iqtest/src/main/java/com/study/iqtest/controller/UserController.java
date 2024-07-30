@@ -2,6 +2,7 @@ package com.study.iqtest.controller;
 
 import com.study.iqtest.dto.UserDTO;
 import com.study.iqtest.dto.PasswordResetTokenDTO;
+import com.study.iqtest.repository.RoleRepository;
 import com.study.iqtest.security.JwtUtil;
 import com.study.iqtest.service.EmailService;
 import com.study.iqtest.service.PasswordResetTokenService;
@@ -30,9 +31,6 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private EmailService emailService;
 
     @Autowired
@@ -40,6 +38,9 @@ public class UserController {
 
     @Autowired
     private PasswordResetTokenService passwordResetTokenService;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -50,7 +51,6 @@ public class UserController {
         if (userService.findByEmail(userDTO.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email is already in use");
         }
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userService.registerUser(userDTO);
         return ResponseEntity.ok("User registered successfully");
     }
@@ -62,7 +62,10 @@ public class UserController {
         if (userOpt.isPresent()) {
             UserDTO user = userOpt.get();
             if (userService.checkPassword(userDTO.getPassword(), user.getPassword())) {
-                final String jwt = jwtUtil.generateToken(user.getEmail());
+                String roleName = "ROLE_" + roleRepository.findById(user.getRoleId().toHexString())
+                        .orElseThrow(() -> new IllegalStateException("Role not found"))
+                        .getRoleName().toUpperCase();
+                final String jwt = jwtUtil.generateToken(user.getEmail(), roleName);
                 return ResponseEntity.ok(jwt);
             } else {
                 return ResponseEntity.status(401).body("Invalid email or password");
@@ -101,4 +104,3 @@ public class UserController {
         return ResponseEntity.badRequest().body("Email not found");
     }
 }
-

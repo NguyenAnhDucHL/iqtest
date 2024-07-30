@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -16,12 +18,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IqTestSettingDTO {
 
-    private String id;
-    private String adminId;
+    private ObjectId id;
+    private ObjectId adminId;
     private String settingName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    private String createdAt;
+    private Date createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    private String updatedAt;
+    private Date updatedAt;
     private List<IqTestQuestionDTO> questions;
 }

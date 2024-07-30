@@ -33,6 +33,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InvalidRoleIdException.class)
+    public ResponseEntity<String> handleInvalidRoleIdException(InvalidRoleIdException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     // ErrorResponse class
     public static class ErrorResponse {
         private String error;

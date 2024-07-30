@@ -8,12 +8,13 @@ import com.study.iqtest.model.IqTestQuestion;
 import com.study.iqtest.model.IqTestSetting;
 import com.study.iqtest.repository.IqTestQuestionRepository;
 import com.study.iqtest.repository.IqTestSettingRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,15 +37,14 @@ public class IqTestSettingService {
     @Autowired
     private IqTestAnswerService iqTestAnswerService;
 
-
     @Transactional
     public IqTestSettingDTO createSettingWithQuestions(IqTestSettingDTO dto) {
         IqTestSetting setting = iqTestSettingMapper.toModal(dto);
-        setting.setCreatedAt(LocalDateTime.now().toString());
-        setting.setUpdatedAt(LocalDateTime.now().toString());
+        setting.setCreatedAt(new Date());
+        setting.setUpdatedAt(new Date());
         setting = iqTestSettingRepository.save(setting);
 
-        final String settingId = setting.getId();
+        final ObjectId settingId = setting.getId();
         List<IqTestQuestionDTO> listQuestions = new ArrayList<>();
 
         dto.getQuestions().forEach(question -> {
@@ -59,13 +59,13 @@ public class IqTestSettingService {
     }
 
     @Transactional
-    public IqTestSettingDTO updateSetting(String id, IqTestSettingDTO settingDto) {
-        Optional<IqTestSetting> existingSetting = iqTestSettingRepository.findById(id);
+    public IqTestSettingDTO updateSetting(ObjectId id, IqTestSettingDTO settingDto) {
+        Optional<IqTestSetting> existingSetting = iqTestSettingRepository.findById(id.toHexString());
         if (existingSetting.isPresent()) {
             IqTestSetting setting = existingSetting.get();
 
             setting.setSettingName(settingDto.getSettingName());
-            setting.setUpdatedAt(LocalDateTime.now().toString());
+            setting.setUpdatedAt(new Date());
 
             iqTestQuestionRepository.deleteByTestSettingId(setting.getId());
 
@@ -89,10 +89,10 @@ public class IqTestSettingService {
     }
 
     @Transactional
-    public void deleteSettingById(String testSettingId) {
+    public void deleteSettingById(ObjectId testSettingId) {
         List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testSettingId);
 
-        List<String> questionIds = questions.stream()
+        List<ObjectId> questionIds = questions.stream()
                 .map(IqTestQuestion::getId)
                 .collect(Collectors.toList());
 
@@ -102,9 +102,8 @@ public class IqTestSettingService {
 
         iqTestQuestionRepository.deleteByTestSettingId(testSettingId);
 
-        iqTestSettingRepository.deleteById(testSettingId);
+        iqTestSettingRepository.deleteById(testSettingId.toHexString());
     }
-
 
     public List<IqTestSettingDTO> getAllSettings() {
         return iqTestSettingRepository.findAll().stream()
@@ -117,8 +116,8 @@ public class IqTestSettingService {
                 .collect(Collectors.toList());
     }
 
-    public IqTestSettingDTO getSettingById(String id) {
-        return iqTestSettingRepository.findById(id)
+    public IqTestSettingDTO getSettingById(ObjectId id) {
+        return iqTestSettingRepository.findById(id.toHexString())
                 .map(iqTestSetting -> {
                     IqTestSettingDTO settingDTO = iqTestSettingMapper.toDto(iqTestSetting);
                     List<IqTestQuestionDTO> questions = iqTestQuestionService.getQuestionsBySettingId(id);

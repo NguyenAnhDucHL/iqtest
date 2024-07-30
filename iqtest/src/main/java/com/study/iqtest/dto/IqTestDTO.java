@@ -2,12 +2,13 @@ package com.study.iqtest.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import org.bson.types.ObjectId;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -15,8 +16,9 @@ import org.springframework.data.annotation.Id;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IqTestDTO {
-    private String id;
-    private String userId;
-    private String testDate;
+    private ObjectId id;
+    private ObjectId userId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
+    private Date testDate;
     private String status;
 }

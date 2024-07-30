@@ -1,15 +1,16 @@
 package com.study.iqtest.repository;
 
 import com.study.iqtest.model.IqTestAnswer;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface IqTestAnswerRepository extends MongoRepository<IqTestAnswer, String> {
-    List<IqTestAnswer> findByQuestionId(String questionId);
-    void deleteByQuestionId(String questionId);
-    void deleteByQuestionIdIn(List<String> questionIds);
+public interface IqTestAnswerRepository extends MongoRepository<IqTestAnswer, ObjectId> {
+    List<IqTestAnswer> findByQuestionId(ObjectId questionId);
+    void deleteByQuestionId(ObjectId questionId);
+    void deleteByQuestionIdIn(List<ObjectId> questionIds);
 }
 

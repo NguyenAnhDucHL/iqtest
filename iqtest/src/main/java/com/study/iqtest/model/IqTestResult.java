@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 
 @Document(collection = "iqtestresults")
 @Getter
@@ -20,16 +23,15 @@ public class IqTestResult {
 
     @Id
     @JsonProperty("_id")
-    private String id;
+    private ObjectId id;
     @JsonProperty("testId")
-    private String testId;
+    private ObjectId testId;
     @JsonProperty("score")
     private int score;
     @JsonProperty("resultDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    private String resultDate;
+    private Date resultDate;
     @JsonProperty("feedback")
     private String feedback;
 
-    // Getters and setters
 }

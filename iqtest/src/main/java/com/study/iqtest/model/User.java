@@ -1,5 +1,6 @@
 package com.study.iqtest.model;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,6 +11,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import java.util.Date;
 import java.util.Set;
 
 @Document(collection = "users")
@@ -22,7 +25,7 @@ public class User {
 
     @Id
     @JsonProperty("_id")
-    private String id;
+    private ObjectId id;
     @JsonProperty("name")
     private String name;
     @JsonProperty("email")
@@ -32,11 +35,11 @@ public class User {
     @JsonProperty("phoneNumber")
     private String phoneNumber;
     @JsonProperty("roleId")
-    private String roleId;
+    private ObjectId roleId;
     @JsonProperty("createdAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    private String createdAt;
+    private Date createdAt;
     @JsonProperty("updatedAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    private String updatedAt;
+    private Date updatedAt;
 }

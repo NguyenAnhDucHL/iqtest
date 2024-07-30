@@ -7,11 +7,12 @@ import com.study.iqtest.model.IqTestAnswer;
 import com.study.iqtest.model.IqTestQuestion;
 import com.study.iqtest.repository.IqTestAnswerRepository;
 import com.study.iqtest.repository.IqTestQuestionRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,18 +37,18 @@ public class IqTestQuestionService {
     @Transactional
     public IqTestQuestionDTO createQuestion(IqTestQuestionDTO questionDTO) {
         IqTestQuestion question = iqTestQuestionMapper.toModal(questionDTO);
-        question.setCreatedAt(LocalDateTime.now().toString());
-        question.setUpdatedAt(LocalDateTime.now().toString());
+        question.setCreatedAt(new Date());
+        question.setUpdatedAt(new Date());
         question = iqTestQuestionRepository.save(question);
 
-        final String questionId = question.getId();
+        final ObjectId questionId = question.getId();
         List<IqTestAnswer> answers = questionDTO.getAnswers().stream()
                 .map(iqTestAnswerMapper::toModal)
                 .collect(Collectors.toList());
         answers.forEach(answer -> {
             answer.setQuestionId(questionId);
-            answer.setCreatedAt(LocalDateTime.now().toString());
-            answer.setUpdatedAt(LocalDateTime.now().toString());
+            answer.setCreatedAt(new Date());
+            answer.setUpdatedAt(new Date());
         });
         iqTestAnswerRepository.saveAll(answers);
 
@@ -60,20 +61,20 @@ public class IqTestQuestionService {
     }
 
     @Transactional
-    public IqTestQuestionDTO updateQuestion(String id, IqTestQuestionDTO questionDTO) {
+    public IqTestQuestionDTO updateQuestion(ObjectId id, IqTestQuestionDTO questionDTO) {
         IqTestQuestion question = iqTestQuestionMapper.toModal(questionDTO);
         question.setId(id);
-        question.setUpdatedAt(LocalDateTime.now().toString());
+        question.setUpdatedAt(new Date());
         question = iqTestQuestionRepository.save(question);
         iqTestAnswerRepository.deleteByQuestionId(id);
 
-        final String questionId = question.getId();
+        final ObjectId questionId = question.getId();
         List<IqTestAnswer> answers = questionDTO.getAnswers().stream()
                 .map(iqTestAnswerMapper::toModal)
                 .collect(Collectors.toList());
         answers.forEach(answer -> {
             answer.setQuestionId(questionId);
-            answer.setUpdatedAt(LocalDateTime.now().toString());
+            answer.setUpdatedAt(new Date());
         });
         iqTestAnswerRepository.saveAll(answers);
 
@@ -86,25 +87,24 @@ public class IqTestQuestionService {
     }
 
     @Transactional
-    public void deleteQuestionByQuestionId(String questionId) {
+    public void deleteQuestionByQuestionId(ObjectId questionId) {
         iqTestQuestionRepository.deleteById(questionId);
         iqTestAnswerService.deleteAnswerByQuestionId(questionId);
     }
 
     @Transactional
     public void deleteQuestionByTestSettingId(String testSettingId) {
-        List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testSettingId);
-        List<String> questionIds = questions.stream()
+        ObjectId testSettingObjectId = new ObjectId(testSettingId);
+        List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testSettingObjectId);
+        List<ObjectId> questionIds = questions.stream()
                 .map(IqTestQuestion::getId)
                 .collect(Collectors.toList());
 
-        iqTestQuestionRepository.deleteByTestSettingId(testSettingId);
-
+        iqTestQuestionRepository.deleteByTestSettingId(testSettingObjectId);
         iqTestAnswerService.deleteAnswersByQuestionIds(questionIds);
     }
 
-
-    public List<IqTestQuestionDTO> getQuestionsBySettingId(String settingId) {
+    public List<IqTestQuestionDTO> getQuestionsBySettingId(ObjectId settingId) {
         List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(settingId);
         return questions.stream().map(iqTestQuestion -> {
             List<IqTestAnswer> answers = iqTestAnswerRepository.findByQuestionId(iqTestQuestion.getId());

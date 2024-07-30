@@ -4,6 +4,7 @@ import com.study.iqtest.dto.IqTestAnswerDTO;
 import com.study.iqtest.exception.ResourceNotFoundException;
 import com.study.iqtest.model.IqTestAnswer;
 import com.study.iqtest.repository.IqTestAnswerRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class IqTestAnswerService {
     private IqTestAnswerRepository iqTestAnswerRepository;
 
     public IqTestAnswer createAnswer(IqTestAnswerDTO answerDTO) {
-        IqTestAnswer answer = new IqTestAnswer(); // Create a new answer entity from DTO
+        IqTestAnswer answer = new IqTestAnswer();
         answer.setAnswerText(answerDTO.getAnswerText());
         answer.setCorrect(answerDTO.isCorrect());
         answer.setImageUrl(answerDTO.getImageUrl());
@@ -24,7 +25,7 @@ public class IqTestAnswerService {
         return iqTestAnswerRepository.save(answer);
     }
 
-    public IqTestAnswer updateAnswer(String id, IqTestAnswerDTO answerDTO) {
+    public IqTestAnswer updateAnswer(ObjectId id, IqTestAnswerDTO answerDTO) {
         IqTestAnswer answer = iqTestAnswerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
         answer.setAnswerText(answerDTO.getAnswerText());
@@ -34,19 +35,20 @@ public class IqTestAnswerService {
         return iqTestAnswerRepository.save(answer);
     }
 
-    public List<IqTestAnswer> getAnswersByQuestionId(String questionId) {
+    public List<IqTestAnswer> getAnswersByQuestionId(ObjectId questionId) {
         return iqTestAnswerRepository.findByQuestionId(questionId);
     }
 
-    public void deleteAnswerByQuestionId(String questionId) {
+    public void deleteAnswerByQuestionId(ObjectId questionId) {
         iqTestAnswerRepository.deleteByQuestionId(questionId);
     }
 
-    public void deleteAnswerById(String id) {
+    public void deleteAnswerById(ObjectId id) {
         iqTestAnswerRepository.deleteById(id);
     }
 
-    public void deleteAnswersByQuestionIds(List<String> questionIds) {
+    public void deleteAnswersByQuestionIds(List<ObjectId> questionIds) {
         iqTestAnswerRepository.deleteByQuestionIdIn(questionIds);
     }
+
 }

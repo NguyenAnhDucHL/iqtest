@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 
 @Document(collection = "iqtestanswers")
 @Getter
@@ -20,9 +23,9 @@ public class IqTestAnswer {
 
     @Id
     @JsonProperty("_id")
-    private String id;
+    private ObjectId id;
     @JsonProperty("questionId")
-    private String questionId;
+    private ObjectId questionId;
     @JsonProperty("answerText")
     private String answerText;
     @JsonProperty("isCorrect")
@@ -31,9 +34,9 @@ public class IqTestAnswer {
     private String imageUrl;
     @JsonProperty("createdAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    private String createdAt;
+    private Date createdAt;
     @JsonProperty("updatedAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
-    private String updatedAt;
+    private Date updatedAt;
 
 }
