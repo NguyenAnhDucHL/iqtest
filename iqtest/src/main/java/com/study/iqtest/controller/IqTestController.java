@@ -2,6 +2,7 @@ package com.study.iqtest.controller;
 
 import com.study.iqtest.dto.IqTestAnswerDTO;
 import com.study.iqtest.dto.UserDTO;
+import com.study.iqtest.service.admin.UserProfileService;
 import com.study.iqtest.service.student.IqTestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.bson.types.ObjectId;
@@ -20,6 +21,9 @@ public class IqTestController {
 
     @Autowired
     private IqTestService iqTestService;
+
+    @Autowired
+    private UserProfileService userProfileService;
 
     @PostMapping("/start")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_STUDENT')")
@@ -54,5 +58,15 @@ public class IqTestController {
     @Operation(summary = "Get the result of a specific IQ test", description = "Retrieves the result of a completed IQ test")
     public ResponseEntity<?> getIQTestResult(@PathVariable("testId") @Parameter(description = "ID of the IQ test") ObjectId testId) {
         return ResponseEntity.ok(iqTestService.getResult(testId));
+    }
+
+    @PutMapping("/{userId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_STUDENT')")
+    @Operation(summary = "Update user profile", description = "Update user profile by user ID")
+    public ResponseEntity<UserDTO> updateUserProfile(
+            @PathVariable("userId") @Parameter(description = "ID of the user to be updated") ObjectId userId,
+            @RequestBody UserDTO userDTO) {
+        UserDTO updatedUser = userProfileService.updateUserProfile(userId, userDTO);
+        return ResponseEntity.ok(updatedUser);
     }
 }

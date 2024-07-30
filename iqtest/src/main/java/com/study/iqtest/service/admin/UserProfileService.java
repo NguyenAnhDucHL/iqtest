@@ -1,6 +1,7 @@
 package com.study.iqtest.service.admin;
 
 import com.study.iqtest.dto.IqTestResultDTO;
+import com.study.iqtest.dto.UserDTO;
 import com.study.iqtest.dto.UserProfileDTO;
 import com.study.iqtest.exception.UserNotFoundException;
 import com.study.iqtest.model.IqTest;
@@ -13,6 +14,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,5 +60,17 @@ public class UserProfileService {
                 user.getUpdatedAt(),
                 iqTestResultDTOs
         );
+    }
+
+    public UserDTO updateUserProfile(ObjectId userId, UserDTO userDTO) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setUpdatedAt(new Date());
+        userRepository.save(user);
+        return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.getPhoneNumber(),
+                user.getRoleId(), user.getCreatedAt(), user.getUpdatedAt());
     }
 }
