@@ -1,6 +1,5 @@
 package com.study.iqtest.security;
 
-import com.study.iqtest.security.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -58,6 +57,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
+
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
         chain.doFilter(request, response);
     }
 }
