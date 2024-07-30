@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface IqTestRepository extends MongoRepository<IqTest, ObjectId> {
+    List<IqTest> findByUserIdIn(List<ObjectId> userIds);
     List<IqTest> findByUserId(ObjectId userId);
 }

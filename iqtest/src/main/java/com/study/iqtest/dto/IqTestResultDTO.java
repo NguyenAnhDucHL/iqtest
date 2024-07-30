@@ -18,8 +18,12 @@ import java.util.Date;
 public class IqTestResultDTO {
     private ObjectId id;
     private ObjectId testId;
+    private ObjectId userId;
     private int score;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date resultDate;
     private String feedback;
+    private String userName;
+    private String userEmail;
+    private String userPhoneNumber;
 }

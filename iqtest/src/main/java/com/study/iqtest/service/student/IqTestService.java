@@ -1,28 +1,17 @@
 package com.study.iqtest.service.student;
 
-import com.study.iqtest.dto.IqTestQuestionDTO;
-import com.study.iqtest.dto.IqTestDTO;
-import com.study.iqtest.dto.UserDTO;
-import com.study.iqtest.dto.IqTestAnswerDTO;
-import com.study.iqtest.dto.IqTestResultDTO;
+import com.study.iqtest.dto.*;
 import com.study.iqtest.exception.IqTestException;
 import com.study.iqtest.mapper.IqTestAnswerMapper;
 import com.study.iqtest.mapper.IqTestMapper;
 import com.study.iqtest.mapper.IqTestQuestionMapper;
 import com.study.iqtest.mapper.IqTestResultMapper;
-import com.study.iqtest.model.IqTest;
-import com.study.iqtest.model.IqTestAnswer;
-import com.study.iqtest.model.IqTestQuestion;
-import com.study.iqtest.model.IqTestResult;
-import com.study.iqtest.repository.IqTestAnswerRepository;
-import com.study.iqtest.repository.IqTestQuestionRepository;
-import com.study.iqtest.repository.IqTestRepository;
-import com.study.iqtest.repository.IqTestResultRepository;
+import com.study.iqtest.model.*;
+import com.study.iqtest.repository.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +31,9 @@ public class IqTestService {
 
     @Autowired
     private IqTestResultRepository iqTestResultRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private IqTestMapper iqTestMapper;
@@ -92,13 +84,17 @@ public class IqTestService {
         iqTestResult.setFeedback("Great Job!");
         iqTestResult = iqTestResultRepository.save(iqTestResult);
 
-        return iqTestResultMapper.toDto(iqTestResult);
+        User user = userRepository.findById(iqTest.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        return iqTestResultMapper.toDto(iqTestResult, user);
     }
 
     public IqTestResultDTO getResult(ObjectId testId) {
         Optional<IqTestResult> result = iqTestResultRepository.findByTestId(testId);
         if (result.isPresent()) {
-            return iqTestResultMapper.toDto(result.get());
+            IqTest iqTest = iqTestRepository.findById(result.get().getTestId()).orElseThrow(() -> new RuntimeException("Test not found"));
+            User user = userRepository.findById(iqTest.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+            return iqTestResultMapper.toDto(result.get(), user);
         } else {
             throw new IqTestException("Result not found");
         }

@@ -33,5 +33,4 @@ public class IqTestResult {
     private Date resultDate;
     @JsonProperty("feedback")
     private String feedback;
-
 }
