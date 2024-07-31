@@ -85,17 +85,16 @@ public class IqTestService {
         }).collect(Collectors.toList());
     }
 
-
-
     @Transactional
     public IqTestResultDTO finishTest(ObjectId testId, List<IqTestAnswerDTO> answers) {
         IqTest iqTest = iqTestRepository.findById(testId).orElseThrow(() -> new IqTestException("Test not found"));
 
+        int score = 0;
+
         for (IqTestAnswerDTO answerDTO : answers) {
-            IqTestAnswer answer = iqTestAnswerMapper.toModal(answerDTO);
-            answer.setCreatedAt(new Date());
-            answer.setUpdatedAt(new Date());
-            iqTestAnswerRepository.save(answer);
+            if (answerDTO.isCorrect()) {
+                score += 10; // Assuming each correct answer gives 10 points
+            }
         }
 
         iqTest.setStatus("Finished");
@@ -103,24 +102,29 @@ public class IqTestService {
 
         IqTestResult result = new IqTestResult();
         result.setTestId(testId);
-        result.setScore(calculateScore(answers));
+        result.setScore(score);
         result.setResultDate(new Date());
-        result.setFeedback("Great Job!");
+        result.setFeedback(generateFeedback(score));
         result = iqTestResultRepository.save(result);
 
         User user = userRepository.findById(iqTest.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
         return iqTestResultMapper.toDto(result, user);
     }
 
-    private int calculateScore(List<IqTestAnswerDTO> answers) {
-        int score = 0;
-        for (IqTestAnswerDTO answer : answers) {
-            if (answer.isCorrect()) {
-                score += 10; // Assuming each correct answer gives 10 points
-            }
+    private String generateFeedback(int score) {
+        if (score < 50) {
+            return "Bad";
+        } else if (score < 100) {
+            return "Quite good";
+        } else if (score < 150) {
+            return "Good";
+        } else if (score < 200) {
+            return "Very good";
+        } else {
+            return "Excellent";
         }
-        return score;
     }
+
 
     public IqTestResultDTO getResult(ObjectId testId) {
         Optional<IqTestResult> result = iqTestResultRepository.findByTestId(testId);
