@@ -1,10 +1,13 @@
 package com.study.iqtest.security;
 
+import com.study.iqtest.service.CustomUserDetailsService;
+import com.study.iqtest.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,8 +28,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    @Qualifier("customUserDetailsService")
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -40,14 +42,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
-            } catch (IllegalArgumentException e) {
-                logger.error("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
-                logger.error("JWT Token has expired");
+                logger.warn("JWT token is expired");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token is expired");
+                return;
             }
         }
 
-        if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
@@ -56,10 +58,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
-        }
-
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         chain.doFilter(request, response);

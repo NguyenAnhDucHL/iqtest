@@ -7,6 +7,7 @@ import com.study.iqtest.model.Role;
 import com.study.iqtest.model.User;
 import com.study.iqtest.repository.RoleRepository;
 import com.study.iqtest.repository.UserRepository;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,21 +24,20 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    private static final Logger logger = Logger.getLogger(UserService.class.getName());
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
+    }
 
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
@@ -53,7 +53,6 @@ public class UserService implements UserDetailsService {
         Role role = roleRepository.findById(roleIdString)
                 .orElseThrow(() -> new InvalidRoleIdException("Role not found with ID: " + roleIdString));
 
-        // Tạo một đối tượng User từ UserDTO
         User user = userMapper.toModal(userDTO);
         String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
         user.setPassword(encodedPassword);
@@ -66,20 +65,5 @@ public class UserService implements UserDetailsService {
 
     public Optional<UserDTO> findByEmail(String email) {
         return userRepository.findByEmail(email).map(userMapper::toDto);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
-
-        Role role = roleRepository.findById(user.getRoleId().toString())
-                .orElseThrow(() -> new IllegalStateException("Role not found"));
-
-        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.getRoleName().toUpperCase());
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                Collections.singletonList(authority));
     }
 }

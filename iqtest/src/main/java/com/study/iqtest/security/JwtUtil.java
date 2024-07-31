@@ -1,13 +1,11 @@
 package com.study.iqtest.security;
 
-import com.study.iqtest.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +14,11 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    @Autowired
-    private JwtConfig jwtConfig;
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private long expirationTime;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -33,37 +34,24 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(jwtConfig.getSecretKey().getBytes(StandardCharsets.UTF_8)) // Ensure the key is in bytes
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String username, String roleName) {
+    public String generateToken(String username, String email, String roleName) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("email", email);
         claims.put("role", roleName);
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes(StandardCharsets.UTF_8))
-                .compact();
+        return createToken(claims, username);
     }
 
-
-    private String createToken(String subject) {
-        return Jwts.builder()
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey().getBytes(StandardCharsets.UTF_8)) // Ensure the key is in bytes
-                .compact();
+    private String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 
     public Boolean validateToken(String token, String username) {
@@ -71,4 +59,3 @@ public class JwtUtil {
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 }
-

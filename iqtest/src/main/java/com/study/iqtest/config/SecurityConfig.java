@@ -3,8 +3,6 @@ package com.study.iqtest.config;
 import com.study.iqtest.security.CustomAccessDeniedHandler;
 import com.study.iqtest.security.CustomAuthenticationEntryPoint;
 import com.study.iqtest.security.JwtRequestFilter;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,17 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-
-    @Autowired
-    private CustomAccessDeniedHandler accessDeniedHandler;
-
-    @Autowired
-    private CustomAuthenticationEntryPoint authenticationEntryPoint;
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
@@ -44,8 +33,8 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
-                                .accessDeniedHandler(accessDeniedHandler)
-                                .authenticationEntryPoint(authenticationEntryPoint)
+                                .accessDeniedHandler(new CustomAccessDeniedHandler())
+                                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 )
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

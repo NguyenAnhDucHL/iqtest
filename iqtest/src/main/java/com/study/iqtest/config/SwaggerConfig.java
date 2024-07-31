@@ -4,30 +4,30 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.Contact;
 import org.springdoc.core.GroupedOpenApi;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.ExternalDocumentation;
 
 @Configuration
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .info(new Info()
-                        .title("IQ Test API")
-                        .version("1.0")
-                        .description("API documentation for IQ Test Application")
-                        .contact(new Contact()
-                                .name("IQ Test")
-                                .url("https://yourwebsite.com")
-                                .email("ducna27@fpt.com")));
+    public GroupedOpenApi publicApi() {
+        return GroupedOpenApi.builder()
+                .group("IQTest-public")
+                .pathsToMatch("/public/**")
+                .build();
     }
 
     @Bean
-    public GroupedOpenApi publicApi() {
-        return GroupedOpenApi.builder()
-                .group("public")
-                .pathsToMatch("/api/iqtest/**")
-                .build();
+    public OpenAPI springShopOpenAPI() {
+        return new OpenAPI()
+                .info(new Info().title("IQ Test API")
+                        .description("IQ Test application")
+                        .version("v0.0.1")
+                        .license(new License().name("Apache 2.0").url("http://springdoc.org")))
+                .externalDocs(new ExternalDocumentation()
+                        .description("IQTest Wiki Documentation")
+                        .url("https://spring.io/projects/spring-boot"));
     }
 }

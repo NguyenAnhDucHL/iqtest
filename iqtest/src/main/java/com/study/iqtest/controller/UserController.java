@@ -69,7 +69,7 @@ public class UserController {
                 String roleName = "ROLE_" + roleRepository.findById(user.getRoleId().toHexString())
                         .orElseThrow(() -> new IllegalStateException("Role not found"))
                         .getRoleName().toUpperCase();
-                final String jwt = jwtUtil.generateToken(user.getEmail(), roleName);
+                final String jwt = jwtUtil.generateToken(user.getEmail(), user.getEmail(), roleName);
                 return ResponseEntity.ok(jwt);
             } else {
                 return ResponseEntity.status(401).body("Invalid email or password");
