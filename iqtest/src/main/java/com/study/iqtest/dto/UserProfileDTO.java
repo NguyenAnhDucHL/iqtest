@@ -1,6 +1,8 @@
 package com.study.iqtest.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.study.iqtest.serializer.ObjectIdSerializer;
 import lombok.*;
 import org.bson.types.ObjectId;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserProfileDTO {
 
+    @JsonSerialize(using = ObjectIdSerializer.class)
     private ObjectId id;
     private String name;
     private String email;

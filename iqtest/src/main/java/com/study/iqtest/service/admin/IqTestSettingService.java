@@ -67,12 +67,13 @@ public class IqTestSettingService {
             setting.setSettingName(settingDto.getSettingName());
             setting.setUpdatedAt(new Date());
 
-            iqTestQuestionRepository.deleteByTestSettingId(setting.getId());
+            iqTestQuestionService.deleteQuestionByTestSettingId(setting.getId());
 
             setting = iqTestSettingRepository.save(setting);
 
             List<IqTestQuestionDTO> updatedQuestions = new ArrayList<>();
             for (IqTestQuestionDTO questionDto : settingDto.getQuestions()) {
+                questionDto.setTestSettingId(setting.getId());
                 IqTestQuestionDTO updatedQuestion = iqTestQuestionService.createQuestion(questionDto);
                 updatedQuestions.add(updatedQuestion);
             }

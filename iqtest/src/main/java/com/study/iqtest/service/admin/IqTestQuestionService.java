@@ -93,15 +93,14 @@ public class IqTestQuestionService {
     }
 
     @Transactional
-    public void deleteQuestionByTestSettingId(String testSettingId) {
-        ObjectId testSettingObjectId = new ObjectId(testSettingId);
-        List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testSettingObjectId);
+    public void deleteQuestionByTestSettingId(ObjectId testSettingId) {
+        List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testSettingId);
         List<ObjectId> questionIds = questions.stream()
                 .map(IqTestQuestion::getId)
                 .collect(Collectors.toList());
 
-        iqTestQuestionRepository.deleteByTestSettingId(testSettingObjectId);
         iqTestAnswerService.deleteAnswersByQuestionIds(questionIds);
+        iqTestQuestionRepository.deleteByTestSettingId(testSettingId);
     }
 
     public List<IqTestQuestionDTO> getQuestionsBySettingId(ObjectId settingId) {
