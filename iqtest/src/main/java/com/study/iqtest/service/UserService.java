@@ -1,7 +1,9 @@
 package com.study.iqtest.service;
 
+import com.study.iqtest.dto.RoleDTO;
 import com.study.iqtest.dto.UserDTO;
 import com.study.iqtest.exception.InvalidRoleIdException;
+import com.study.iqtest.mapper.RoleMapper;
 import com.study.iqtest.mapper.UserMapper;
 import com.study.iqtest.model.Role;
 import com.study.iqtest.model.User;
@@ -20,8 +22,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -30,13 +34,16 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final RoleMapper roleMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder,
+                       RoleRepository roleRepository, RoleMapper roleMapper ) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.roleMapper = roleMapper;
     }
 
     public boolean checkPassword(String rawPassword, String encodedPassword) {
@@ -65,5 +72,11 @@ public class UserService {
 
     public Optional<UserDTO> findByEmail(String email) {
         return userRepository.findByEmail(email).map(userMapper::toDto);
+    }
+
+    public List<RoleDTO> getAllRoles() {
+        return roleRepository.findAll().stream()
+                .map(roleMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

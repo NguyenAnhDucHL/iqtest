@@ -1,7 +1,9 @@
 package com.study.iqtest.controller;
 
+import com.study.iqtest.dto.RoleDTO;
 import com.study.iqtest.dto.UserDTO;
 import com.study.iqtest.dto.PasswordResetTokenDTO;
+import com.study.iqtest.model.Role;
 import com.study.iqtest.repository.RoleRepository;
 import com.study.iqtest.security.JwtUtil;
 import com.study.iqtest.service.EmailService;
@@ -15,14 +17,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -117,5 +117,12 @@ public class UserController {
             SecurityContextHolder.clearContext();
         }
         return ResponseEntity.ok("User logged out successfully");
+    }
+
+    @GetMapping("/roles")
+    @Operation(summary = "Get all roles", description = "Retrieve all roles from the database")
+    public ResponseEntity<List<RoleDTO>> getAllRoles() {
+        List<RoleDTO> roles = userService.getAllRoles();
+        return ResponseEntity.ok(roles);
     }
 }
