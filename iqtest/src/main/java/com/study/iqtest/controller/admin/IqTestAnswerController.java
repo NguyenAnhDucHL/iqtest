@@ -49,7 +49,7 @@ public class IqTestAnswerController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Delete an answer by ID", description = "Delete an IQ Test Answer using its ID")
-    public ResponseEntity<Void> deleteAnswer(@PathVariable("id") @Parameter(description = "ID of the answer to be deleted") ObjectId id) {
+    public ResponseEntity<Void> deleteAnswerByAnswerId(@PathVariable("id") @Parameter(description = "ID of the answer to be deleted") ObjectId id) {
         iqTestAnswerService.deleteAnswerById(id);
         return ResponseEntity.noContent().build();
     }
