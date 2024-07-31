@@ -11,10 +11,12 @@ import com.study.iqtest.repository.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +35,9 @@ public class IqTestService {
     private IqTestResultRepository iqTestResultRepository;
 
     @Autowired
+    private IqTestSettingRepository iqTestSettingRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -48,45 +53,73 @@ public class IqTestService {
     private IqTestResultMapper iqTestResultMapper;
 
     public IqTestDTO startTest(UserDTO user) {
+        List<IqTestSetting> settings = iqTestSettingRepository.findAll();
+        if (settings.isEmpty()) {
+            throw new IqTestException("No test settings available");
+        }
+        Random random = new Random();
+        IqTestSetting randomSetting = settings.get(random.nextInt(settings.size()));
+
         IqTest iqTest = new IqTest();
         iqTest.setUserId(user.getId());
         iqTest.setTestDate(new Date());
         iqTest.setStatus("In Progress");
+        iqTest.setTestSettingId(randomSetting.getId()); // Set the randomly selected test setting ID
         iqTest = iqTestRepository.save(iqTest);
+
         return iqTestMapper.toDto(iqTest);
     }
 
-    public List<IqTestQuestionDTO> getQuestions(ObjectId testId) {
-        List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testId);
-        return questions.stream().map(iqTestQuestionMapper::toDto).collect(Collectors.toList());
+
+    public List<IqTestQuestionDTO> getQuestions(ObjectId testSettingId) {
+        List<IqTestQuestion> questions = iqTestQuestionRepository.findByTestSettingId(testSettingId);
+
+        return questions.stream().map(question -> {
+            IqTestQuestionDTO questionDTO = iqTestQuestionMapper.toDto(question);
+            List<IqTestAnswer> answers = iqTestAnswerRepository.findByQuestionId(question.getId());
+            List<IqTestAnswerDTO> answerDTOs = answers.stream()
+                    .map(iqTestAnswerMapper::toDto).peek(answer -> answer.setCorrect(false))
+                    .collect(Collectors.toList());
+            questionDTO.setAnswers(answerDTOs);
+            return questionDTO;
+        }).collect(Collectors.toList());
     }
 
-    public IqTestAnswerDTO submitAnswer(ObjectId testId, IqTestAnswerDTO answerDTO) {
-        IqTestAnswer answer = iqTestAnswerMapper.toModal(answerDTO);
-        answer.setCreatedAt(new Date());
-        answer = iqTestAnswerRepository.save(answer);
-        return iqTestAnswerMapper.toDto(answer);
-    }
 
-    public IqTestResultDTO finishTest(ObjectId testId) {
-        Optional<IqTest> optionalTest = iqTestRepository.findById(testId);
-        if (!optionalTest.isPresent()) {
-            throw new IqTestException("Test not found");
+
+    @Transactional
+    public IqTestResultDTO finishTest(ObjectId testId, List<IqTestAnswerDTO> answers) {
+        IqTest iqTest = iqTestRepository.findById(testId).orElseThrow(() -> new IqTestException("Test not found"));
+
+        for (IqTestAnswerDTO answerDTO : answers) {
+            IqTestAnswer answer = iqTestAnswerMapper.toModal(answerDTO);
+            answer.setCreatedAt(new Date());
+            answer.setUpdatedAt(new Date());
+            iqTestAnswerRepository.save(answer);
         }
-        IqTest iqTest = optionalTest.get();
-        iqTest.setStatus("Finished");
-        iqTest = iqTestRepository.save(iqTest);
 
-        IqTestResult iqTestResult = new IqTestResult();
-        iqTestResult.setTestId(testId);
-        iqTestResult.setScore(calculateScore(testId));
-        iqTestResult.setResultDate(new Date());
-        iqTestResult.setFeedback("Great Job!");
-        iqTestResult = iqTestResultRepository.save(iqTestResult);
+        iqTest.setStatus("Finished");
+        iqTestRepository.save(iqTest);
+
+        IqTestResult result = new IqTestResult();
+        result.setTestId(testId);
+        result.setScore(calculateScore(answers));
+        result.setResultDate(new Date());
+        result.setFeedback("Great Job!");
+        result = iqTestResultRepository.save(result);
 
         User user = userRepository.findById(iqTest.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+        return iqTestResultMapper.toDto(result, user);
+    }
 
-        return iqTestResultMapper.toDto(iqTestResult, user);
+    private int calculateScore(List<IqTestAnswerDTO> answers) {
+        int score = 0;
+        for (IqTestAnswerDTO answer : answers) {
+            if (answer.isCorrect()) {
+                score += 10; // Assuming each correct answer gives 10 points
+            }
+        }
+        return score;
     }
 
     public IqTestResultDTO getResult(ObjectId testId) {
@@ -98,16 +131,5 @@ public class IqTestService {
         } else {
             throw new IqTestException("Result not found");
         }
-    }
-
-    private int calculateScore(ObjectId testId) {
-        List<IqTestAnswer> answers = iqTestAnswerRepository.findByQuestionId(testId);
-        int score = 0;
-        for (IqTestAnswer answer : answers) {
-            if (answer.isCorrect()) {
-                score += 10;
-            }
-        }
-        return score;
     }
 }

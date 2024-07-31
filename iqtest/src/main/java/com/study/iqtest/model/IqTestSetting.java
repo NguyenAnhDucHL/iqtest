@@ -28,6 +28,8 @@ public class IqTestSetting {
     private ObjectId adminId;
     @JsonProperty("settingName")
     private String settingName;
+    @JsonProperty("duration")
+    private int duration;  // Duration in minutes
     @JsonProperty("createdAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date createdAt;

@@ -18,10 +18,13 @@ import java.util.Date;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IqTestDTO {
+
     @JsonSerialize(using = ObjectIdSerializer.class)
     private ObjectId id;
     @JsonSerialize(using = ObjectIdSerializer.class)
     private ObjectId userId;
+    @JsonSerialize(using = ObjectIdSerializer.class)
+    private ObjectId testSettingId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date testDate;
     private String status;

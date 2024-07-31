@@ -26,10 +26,11 @@ public class IqTest {
     private ObjectId id;
     @JsonProperty("userId")
     private ObjectId userId;
+    @JsonProperty("testSettingId")
+    private ObjectId testSettingId; // Add this field
     @JsonProperty("testDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date testDate;
     @JsonProperty("status")
     private String status;
-
 }

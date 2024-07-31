@@ -25,6 +25,7 @@ public class IqTestSettingDTO {
     @JsonSerialize(using = ObjectIdSerializer.class)
     private ObjectId adminId;
     private String settingName;
+    private int duration;  // Duration in minutes
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Date createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
