@@ -12,6 +12,7 @@ import com.study.iqtest.repository.IqTestResultRepository;
 import com.study.iqtest.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -29,6 +30,9 @@ public class UserProfileService {
 
     @Autowired
     private IqTestResultRepository iqTestResultRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserProfileDTO getUserProfile(ObjectId userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -64,12 +68,19 @@ public class UserProfileService {
 
     public UserDTO updateUserProfile(ObjectId userId, UserDTO userDTO) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+
+        // Encode the password before updating
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setUpdatedAt(new Date());
         userRepository.save(user);
+
         return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.getPhoneNumber(),
                 user.getRoleId(), user.getCreatedAt(), user.getUpdatedAt());
     }

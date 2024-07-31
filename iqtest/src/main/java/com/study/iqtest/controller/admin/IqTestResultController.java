@@ -38,7 +38,7 @@ public class IqTestResultController {
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_STUDENT')")
     @Operation(summary = "Get User Profile", description = "Retrieve the user profile by user ID")
     public ResponseEntity<UserProfileDTO> getUserProfile(
             @PathVariable("userId") @Parameter(description = "ID of the user") ObjectId userId) {
